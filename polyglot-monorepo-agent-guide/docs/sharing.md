@@ -10,8 +10,13 @@
 
 ### 계약 seam
 
-- 계약의 유일 언어중립 원천은 백엔드가 코드퍼스트로 방출하는 `openapi.json`이다(springdoc·키정렬·스냅샷 테스트).
-- 방향은 단방향이다: 백엔드가 originate 하고 프론트가 하류 소비한다. 루트는 원천이 하나이고 방향이 단방향이라는 것만 강제한다.
+- 계약의 단위는 HTTP를 서빙하는 백엔드 실행 단위다. 방출 단위당 계약 하나, 계약당 문서 파일 하나다.
+  - 방출 단위의 식별·구성은 백엔드 서브가이드가 소유한다. 루트는 방출 단위와 계약 파일의 1:1 대응만 강제한다.
+  - HTTP 표면이 없는 실행 단위(batch·worker 류)는 계약을 방출하지 않고 seam에 참여하지 않는다.
+  - 여러 방출 단위의 계약을 한 문서로 병합하지 않는다. operationId·스키마 이름이 충돌하고, 무관한 단위끼리 결합되며, drift 게이트가 원인을 가리지 못한다.
+- 각 계약의 유일 언어중립 원천은 방출 단위가 코드퍼스트로 방출하는 OpenAPI 문서다(springdoc·키정렬·스냅샷 테스트).
+- 계약 파일은 `apps/backend/docs/openapi/`에 둔다. 파일명은 방출 단위 이름을 따르고, 방출 단위가 하나뿐인 동안은 `openapi.json` 단수명을 허용한다.
+- 방향은 단방향이다: 백엔드가 originate 하고 프론트가 하류 소비한다. 루트는 계약마다 원천이 하나이고 방향이 단방향이라는 것만 강제한다.
   - tRPC를 기각했다: 클라이언트 타입이 TS 서버 라우터 타입에서 오므로 Java 서버가 원천을 방출할 수 없다.
   - ts-rest를 기각했다: 계약·어댑터가 전부 TS라 Spring을 컴파일타임으로 검증하지 못하는 수기 미러에 그친다.
 - 방출 기계는 백엔드가, 소비 기계(api-client·egress 검증)는 프론트가 소유한다.
@@ -24,7 +29,7 @@
 
 - 파괴적 변경(삭제·의미변경)은 oasdiff가 검사로 표면화한다.
 - drift 게이트가 계약과 생성물의 일치를 강제한다 — seam(계약 + 생성물)은 어느 단계에서도 반쪽 상태가 되지 않는다.
-  - `openapi.json`에서 재생성한 결과가 커밋된 생성물과 다르면 CI가 실패한다.
+  - 계약에서 재생성한 결과가 커밋된 생성물과 다르면 CI가 실패한다. 코드와 커밋된 계약의 불일치는 방출 단위의 스냅샷 테스트가 잡는다.
   - 기계 보장은 필요조건이지 충분조건이 아니다 — 아래 타입 무결성이 보완한다.
 - 단계화되는 것은 seam이 아니라 소비 반영이다. 추가(확장)의 소비는 원자적으로, 파괴적 제거의 소비는 expand-and-contract로 단계화한다. 다단계 절차는 백엔드 서브가이드가 소유한다.
 
@@ -42,20 +47,24 @@
 
 ### 코드젠 파이프라인
 
-- `packages/shared-types`가 orval로 `openapi.json`에서 타입·Zod·API client를 생성한다(배치·언어중립성은 → [architecture](architecture.md)의 공유 패키지 배치).
-  - 코드젠 툴은 저위험·가역이다. seam은 `openapi.json`이므로 kubb·hey-api 등으로 교체해도 소비처는 무영향이다.
+- `packages/shared-types`가 orval로 계약에서 타입·Zod·API client를 생성한다(배치·언어중립성은 → [architecture](architecture.md)의 공유 패키지 배치).
+  - 코드젠 툴은 저위험·가역이다. seam은 계약 문서이므로 kubb·hey-api 등으로 교체해도 소비처는 무영향이다.
+  - 계약마다 코드젠 엔트리 하나·생성 디렉터리 하나를 둔다.
+- 형상이 같아도 생성 스키마를 계약 간에 공유하지 않는다. 유일한 예외는 에러 모델이다(→ 에러 모델).
+  - 계약을 가로질러 생성물을 공유하면 무관한 방출 단위가 소비처에서 다시 결합된다. 계약별 중복 생성이 정상이다.
 - 타입은 Zod에서 `z.infer`로 파생한다(단일 소스). 수기 타입·수기 Zod를 이중으로 두지 않는다.
 - 생성물은 커밋한다. 손 편집·재생성 불일치는 drift 게이트가 잡는다(→ 계약 진화·무결성).
 - 입력·출력: input `apps/backend/docs/openapi/openapi.json` → output `src/generated`.
+  - 계약이 복수가 되면 생성 디렉터리와 패키지 export를 계약별로 나눈다. 소비처는 자기가 대화하는 계약의 export만 의존한다.
 - 태스크 그래프: `backend#openapi → shared-types#codegen → (프론트) build`(turbo 셀렉터는 패키지명 기준).
   - 백엔드 `apps/backend/package.json`(name `backend`) 스크립트가 `./gradlew`로 위임한다(`openapi` = `generateOpenApiDocs`, `verify` = `./gradlew build`). gradle 태스크명은 백엔드가 소유한다.
-  - 백엔드는 그래프상 불투명 단일 노드다. `outputs`를 최소(`openapi.json`·빌드마커)로 선언하고 내부 증분은 Gradle 자기 캐시가 담당한다.
+  - 백엔드는 그래프상 불투명 단일 노드다. `openapi` 태스크가 모든 방출 단위의 계약을 한 번에 방출하고, `outputs`를 최소(계약 파일·빌드마커)로 선언하며 내부 증분은 Gradle 자기 캐시가 담당한다.
 - 소비 층: 프론트 소비는 `shared-types → api-client(server-only) → 프론트 앱` 단방향이다. `api-client`가 생성물을 벤더 중립 경계로 감싼다. 경계·소비 정책은 프론트 서브가이드가 소유한다.
 
 ### 에러 모델
 
 - 에러 계약은 RFC 9457 ProblemDetail이다. 형식·확장 멤버(`code`·`errors[]`·`traceId`)는 백엔드가 소유한다.
-- `packages/shared-types`가 계약에서 공용 에러 Zod 스키마를 생성한다.
+- 공용 에러 Zod 스키마는 `packages/shared-types`가 하나만 소유한다. 모든 계약이 같은 에러 형상을 공유한다 — 계약 간 생성물 비공유의 유일한 예외다(→ 코드젠 파이프라인).
 - 기계 분기는 `code`로만 한다. `detail`·`title`로 분기하지 않는다 — 사람용 문자열이다.
 - `code`는 런타임에서 open string으로 다룬다. 생성 union은 편의일 뿐 미지 코드에 깨지지 않는다.
 - `traceId`는 관측용 확장 멤버다. 로깅·관측에 쓰되 클라 UI에 raw로 노출하지 않는다.

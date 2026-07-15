@@ -28,7 +28,7 @@ polyglot-monorepo/
 │   ├── backend/           Spring Boot 서브가이드 + Gradle 멀티모듈 + package.json(워크스페이스 멤버)
 │   └── frontend/          Next.js 서브가이드 + 자체 Turborepo(apps/*·packages/*)
 ├── packages/
-│   └── shared-types/      openapi.json에서 생성한 타입·Zod·client (→ sharing)
+│   └── shared-types/      계약(OpenAPI)에서 생성한 타입·Zod·client (→ sharing)
 ├── turbo.json  pnpm-workspace.yaml  .mise.toml
 ```
 
@@ -38,12 +38,12 @@ polyglot-monorepo/
 
   | 레벨          | 위치                        | 담는 것                          |
   | ------------- | --------------------------- | -------------------------------- |
-  | 폴리글랏 경계 | 루트 `packages/*`           | `shared-types`(openapi.json 생성물) |
+  | 폴리글랏 경계 | 루트 `packages/*`           | `shared-types`(계약 생성물)      |
   | 프론트 내부   | `apps/frontend/packages/*`  | TS 공유(ui·api-client 등)        |
   | 백엔드 내부   | `apps/backend/module-common/*` | Java 공유(Gradle)             |
 
 - 세 레벨 모두 도메인 로직·도메인 지식을 담지 않는다 — 기술 지원만 둔다.
-- 언어를 넘는 "공유 타입"은 없다. 루트 `packages/shared-types`는 `openapi.json`에서 생성된 산출물을 담고 TS 앱이 소비한다. 정체·생성·진화는 → [sharing](sharing.md).
+- 언어를 넘는 "공유 타입"은 없다. 루트 `packages/shared-types`는 계약에서 생성된 산출물을 담고 TS 앱이 소비한다. 정체·생성·진화는 → [sharing](sharing.md).
 - 내부 공유 방향(백엔드·프론트 각각)은 검사가 강제한다(→ 경계 강제).
 
 ### 워크스페이스 골격
@@ -69,7 +69,7 @@ packages:
   | -------------------- | --------------------------------------------------------- | --------------------------- |
   | backend-only         | `apps/backend/**` 언어 코드(Gradle 모듈·소스)             | `apps/backend` 서브가이드   |
   | frontend-only        | `apps/frontend/**` 언어 코드(프론트 자체 apps·packages 포함) | `apps/frontend` 서브가이드 |
-  | cross-language(seam) | `openapi.json` 계약·`packages/shared-types`·양쪽 동시     | 루트(→ [sharing](sharing.md)) |
+  | cross-language(seam) | OpenAPI 계약·`packages/shared-types`·양쪽 동시             | 루트(→ [sharing](sharing.md)) |
   | root-infra           | `turbo.json`·`pnpm-workspace.yaml`·`.mise.toml`·루트 `package.json`·`apps/backend/package.json` | 루트 |
 
 - `apps/backend/package.json`은 backend 코드가 아니라 root-infra다. 프론트 `package.json`의 의존성·스크립트는 frontend-only다.
