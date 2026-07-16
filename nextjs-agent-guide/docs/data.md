@@ -42,6 +42,11 @@
 - auth를 세션에서 꺼내 요청에 전파한다. 시크릿·내부 URL은 server-only 경계 안에 둔다 → [architecture](architecture.md)의 시크릿 경계.
 - egress(백엔드→BFF) 검증은 이 경계 1곳에서 `safeParse`한다. 실패는 국소 degrade한다 — 페이지 전체를 throw로 만들지 않는다.
   - ingress(클라→BFF)와 egress는 비대칭 위협이다. ingress는 적대적이라 항상 엄격 검증하고, egress는 계약에서 코드젠된 1st-party라 경계 1곳만 검증한다. 핫 RSC 경로마다 `.parse`를 흩으면 렌더 지연·TTFB만 먹고, 계약 변경은 코드젠·타입 컴파일에서 드러난다. 비용 큰 경로는 샘플링한다.
+- 목록 egress는 페이지 봉투(pagination meta)를 검증한 뒤 항목 배열을 개별 `safeParse`한다. 불량 항목은 드롭하고 서버 로그로 남긴다.
+  - 봉투가 깨지면 목록 자체를 신뢰할 수 없으니 throw하고, 항목 하나의 계약 위반은 그 항목만 드롭한다 — 레코드 하나가 페이지 전체를 죽이면 국소 degrade가 아니다.
+  - 드롭은 pagination meta와 어긋난다(총개수는 그대로인데 항목이 빠진다) — 이 불일치가 드롭의 대가다. 정합이 우선인 화면(정산·어드민 류)은 드롭 대신 throw를 택한다.
+- 상세(단일 리소스) egress 실패는 타입드 에러로 throw한다 — 국소 degrade 규칙의 예외다.
+  - 리소스 하나가 응답 전부라 드롭할 국소 단위가 없고, 에러 바운더리가 해당 라우트만 격리하므로 throw가 곧 국소 degrade다.
 - 백엔드가 별도 서비스라 tRPC는 두지 않는다 — 코드젠 + Zod가 배포 결합 없이 타입 클라이언트를 준다(백엔드가 TS 모노레포로 합쳐지면 재검토).
 
 ### 캐시
@@ -57,6 +62,7 @@
 ### 응답 형상
 
 - ingress(route 파라미터·Server Action 입력)는 항상 엄격 Zod로 검증한다(적대적 입력).
+  - 예외: 상태를 바꾸지 않는 복구 가능한 표시 파라미터(page 등)는 `.catch`로 기본값 보정을 허용한다. 상태를 바꾸는 입력은 보정 없이 거부한다.
 - 성공 응답은 스칼라·객체는 envelope 없이 형상 그대로, 리스트는 pagination meta를 동반한다. 기본은 오프셋(총개수·`page`·`pageSize`)이고, 커서·무한스크롤은 명시하며 meta에 `nextCursor`/`hasMore`를 싣는다.
 - 에러는 백엔드 ProblemDetail을 타입드 에러로 매핑한다. 에러 UI·바운더리(→ [rendering](rendering.md)의 async 상태)가 이를 소비한다.
   - 무타입·애드혹 에러 처리를 기각한 이유: 상태 누락·비일관 UX. RFC 9457 ProblemDetail을 BFF 경계에서 타입드 에러로 고정한다.
