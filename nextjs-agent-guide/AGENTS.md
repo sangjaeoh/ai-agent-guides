@@ -1,12 +1,13 @@
 # AGENTS.md — 앵커
 
-이 저장소의 개발 규칙은 `docs/`의 여섯 문서가 소유한다. 작업 성격에 맞는 문서를 로딩한다.
+이 저장소의 개발 규칙은 `docs/`의 일곱 문서가 소유한다. 작업 성격에 맞는 문서를 로딩한다.
 
 - [`docs/architecture.md`](docs/architecture.md) — 워크스페이스 구조, 패키지 구조, FSD-lite 레이어, 의존 방향, 서버/클라이언트 경계, 시크릿 경계, 설정 불변식, 빌드 강제 불변식
 - [`docs/coding-conventions.md`](docs/coding-conventions.md) — 네이밍, 타입 선언, 컴포넌트, 스타일, 접근성, 표준어, 주석
 - [`docs/design-system.md`](docs/design-system.md) — 디자인 토큰, 컴포넌트 계층, 승격 기준, prop API, 완료 정의, 워크벤치
 - [`docs/rendering.md`](docs/rendering.md) — 렌더 경계, 렌더 전략, 라우팅, async 상태, 메타데이터
 - [`docs/data.md`](docs/data.md) — read-model, 데이터 흐름, BFF, api-client, 캐시, 응답 계약, 폼
+- [`docs/testing.md`](docs/testing.md) — 시나리오 소유, 작업 절차, 테스트 레벨, 행동 명세, 시나리오 충분성, 백엔드 스텁, 테스트 도구
 - [`docs/code-quality.md`](docs/code-quality.md) — 포맷, 린트, 타입, 경계, 워크벤치 게이트, 도구 버전
 
 

@@ -32,11 +32,12 @@ Spring Boot + JPA 백엔드를 일관된 규율로 개발하기 위한 아키텍
 
 ## 문서
 
-규칙은 `docs/`의 네 문서가 소유한다. 진입 앵커는 [`AGENTS.md`](AGENTS.md)다.
+규칙은 `docs/`의 다섯 문서가 소유한다. 진입 앵커는 [`AGENTS.md`](AGENTS.md)다.
 
 - [`docs/architecture.md`](docs/architecture.md) — 모듈 구조·패키지 구조·의존 방향·리포지토리 접근 범위.
 - [`docs/coding-conventions.md`](docs/coding-conventions.md) — 타입 선언·객체 생성/변환·접근제한자·네이밍·주석.
 - [`docs/entity-persistence.md`](docs/entity-persistence.md) — 엔티티 ID·버저닝·물리 FK 금지·연관·상태 전이.
+- [`docs/testing.md`](docs/testing.md) — 시나리오 소유·작업 절차·테스트 레벨·행동 명세·시나리오 충분성·목 정책·테스트 도구.
 - [`docs/code-quality.md`](docs/code-quality.md) — Spotless·NullAway·Error Prone 게이트와 도구 버전.
 
 ## 적용하기

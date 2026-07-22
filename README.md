@@ -11,8 +11,8 @@ AI 코딩 에이전트가 따를 개발 규칙 가이드 모음이다. 아키텍
 
 | 가이드 | 대상 | 범위 |
 |---|---|---|
-| [`spring-boot-agent-guide`](spring-boot-agent-guide) | Spring Boot + JPA 백엔드 (Java 25 · Gradle 멀티모듈) | 아키텍처·컨벤션·엔티티/영속·품질 |
-| [`nextjs-agent-guide`](nextjs-agent-guide) | Next.js 프론트엔드 (App Router · RSC · Turborepo · FSD-lite) | 아키텍처·컨벤션·렌더/데이터·품질 |
+| [`spring-boot-agent-guide`](spring-boot-agent-guide) | Spring Boot + JPA 백엔드 (Java 25 · Gradle 멀티모듈) | 아키텍처·컨벤션·엔티티/영속·테스트·품질 |
+| [`nextjs-agent-guide`](nextjs-agent-guide) | Next.js 프론트엔드 (App Router · RSC · Turborepo · FSD-lite) | 아키텍처·컨벤션·렌더/데이터·테스트·품질 |
 | [`polyglot-monorepo-agent-guide`](polyglot-monorepo-agent-guide) | 백엔드+프론트 폴리글랏 모노레포 | 교차언어 아키텍처·공유방법(계약 seam·코드젠·에러 모델) |
 
 각 가이드의 정확한 기술 스택·문서 목록·적용 방법은 해당 폴더의 README가 소유한다.
