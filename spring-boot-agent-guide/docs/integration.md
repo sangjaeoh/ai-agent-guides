@@ -10,10 +10,12 @@
 
 ### 계약과 배치
 
-- 외부 시스템 호출은 도메인 required 계약 뒤에만 둔다 → [architecture](architecture.md)의 구현 배치 판정.
+- 외부 시스템 호출은 계약(도메인 required 또는 common 소유 기술 계약) 뒤에만 둔다 → [architecture](architecture.md)의 구현 배치 판정.
 - 계약 접미사는 → [coding-conventions](coding-conventions.md)의 클래스 접미사.
-- 구현은 그 도메인의 `adapter/integration`이 소유한다 → [architecture](architecture.md)의 도메인 모듈 구조.
-- 외부 API 요청·응답 DTO는 `adapter/integration`에 두고 모듈 밖에 노출하지 않는다.
+- 도메인 계약 구현의 배치는 → [architecture](architecture.md)의 도메인 모듈 구조를 따른다.
+- 기술 계약 구현의 배치는 → [architecture](architecture.md)의 infra 모듈 구조를 따른다.
+- 외부 API 요청·응답 DTO는 구현 소유 모듈(`adapter/integration` 또는 infra)에 둔다.
+- 외부 API DTO는 모듈 밖에 노출하지 않는다.
 - 외부 타입은 경계에서 도메인 값으로 변환한다.
 
 ### 클라이언트
@@ -64,10 +66,10 @@
 ### 강제와 리뷰
 
 - 아래는 아키텍처 테스트가 빌드에서 강제한다.
-  - `org.springframework.web.client..` 임포트는 도메인 `adapter` 구역만 허용.
+  - `org.springframework.web.client..` 임포트는 도메인 `adapter` 구역과 infra 모듈만 허용.
   - `RestClient` 정적 팩토리(`create`·`builder`) 호출 금지.
 - 아래는 컨벤션 플러그인이 강제한다.
-  - `spring-webflux` 금지 의존성 등록(`WebClient` 차단).
+  - `spring-webflux` 금지 의존성 등록(`WebClient` 차단, 규칙 소유 → [code-quality](code-quality.md)).
 - 강제 항목의 장치가 없으면 최초 도입과 같은 변경에서 추가한다 → [architecture](architecture.md)의 아키텍처 테스트 모듈.
 - 아래는 리뷰로 검증한다.
   - timeout 값의 상한 준수.
