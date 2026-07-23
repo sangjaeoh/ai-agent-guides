@@ -49,7 +49,8 @@
 | 단위 | 엔티티 메서드·값 객체·`Validator`·순수 로직 | 컨텍스트 없는 JVM | 협력자 없이 검증 가능한 행동 |
 | 영속 슬라이스 | 리포지토리·도메인 서비스·query 조회·이벤트 소비자 | `@DataJpaTest` + 실 DB | DB 왕복이 행동의 일부 |
 | 웹 슬라이스 | 컨트롤러·예외 매핑·인가 게이트 | `@WebMvcTest` | HTTP 계약이 행동의 일부 |
-| 통합 | 앱 경계 대표 시나리오 | `@SpringBootTest` + 실 DB | 계층 조립 자체가 검증 대상 |
+| HTTP 어댑터 슬라이스 | `adapter/integration` 구현 | `@RestClientTest` + `MockRestServiceServer` | 외부 HTTP 왕복이 행동의 일부 |
+| 통합 | 앱 경계 대표 시나리오 | `@SpringBootTest` + 실 DB(캐시 무효화 축은 캐시 저장소 포함) | 계층 조립 자체가 검증 대상 |
 | 아키텍처 | 모듈 경계·의존 방향 | → [architecture](architecture.md) | — |
 
 - 통합 테스트는 대표 경로 소수만 둔다.
@@ -102,6 +103,8 @@
 | 이벤트 발행 | 쓰기 행동 성공 시 도메인 이벤트 발행과 페이로드, 검증 실패 시 미발행 | → [architecture](architecture.md) |
 | 이벤트 소비 | 리스너의 멱등 소비(중복 이벤트에 1회 효과) | → [architecture](architecture.md) |
 | 크로스 도메인 조회 | query provided 조회의 축(필터·정렬·페이지) 결과 | → [architecture](architecture.md) |
+| 캐시 무효화 | 쓰기 성공 후 조회의 최신값 반환 | → [caching](caching.md) |
+| 외부 호출 실패 | Gateway 실패의 도메인 예외·실패 값 변환, timeout 초과의 실패 처리 | → [integration](integration.md) |
 
 ### 시나리오 충분성
 
@@ -172,9 +175,10 @@
 ### 목·스텁
 
 - 목은 Mockito를 사용한다.
-- 목 허용 경계는 두 곳이다.
+- Mockito 목 허용 경계는 두 곳이다.
   - required 계약(`Gateway`·`Store`·`Publisher`): 실 벤더는 테스트에서 실행 불가·비결정이다.
   - 웹 슬라이스의 파사드·주입된 provided: HTTP 계약 검증에서 조립·조회는 대상이 아니다.
+- 외부 HTTP 왕복은 목 대신 `MockRestServiceServer` 스텁으로 검증한다(→ 도구).
 - 리포지토리·도메인 서비스는 목으로 대체하지 않는다.
 - 실 DB 슬라이스로 검증한다.
   - 도메인 내부 협력을 목으로 고정하면 테스트가 구현 세부에 결합된다.
@@ -225,13 +229,16 @@
 | 러너 | JUnit 5 (Jupiter) |
 | 단언 | AssertJ |
 | 목 | Mockito |
-| 테스트 DB 연결 | Testcontainers + `@ServiceConnection` |
+| 테스트 DB·캐시 저장소 연결 | Testcontainers + `@ServiceConnection` |
 | 비동기 대기 | Awaitility |
+| HTTP 스텁 | `MockRestServiceServer` (`@RestClientTest`) |
 
 - Kotest·Spock은 사용하지 않는다.
 - 사용하면 빌드에 Kotlin·Groovy 툴체인이 추가된다.
 - Hamcrest 단언은 작성하지 않는다.
 - 스타터에 포함돼도 단언은 AssertJ로 통일한다.
+- WireMock은 도입하지 않는다.
+- 외부 HTTP 검증은 `MockRestServiceServer`로 통일한다.
 - JUnit 4(vintage)는 사용하지 않는다.
 - 커버리지 도구는 선제 도입하지 않는다.
 - 도입 시 이 문서에서 고정한다.
