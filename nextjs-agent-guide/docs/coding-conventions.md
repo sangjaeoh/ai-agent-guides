@@ -23,7 +23,7 @@
   - route handler: `route.ts`
   - 스키마: `schema.ts`
   - 슬라이스 public API: `index.client.ts` / `index.server.ts`
-- 컴포넌트 라우트 파일(`page`, `layout`, `loading`, `error`, `not-found`, `global-error`, `default`)의 라우트 컴포넌트는 `export default`를 사용한다.
+- 컴포넌트 라우트 파일(`page`, `layout`, `template`, `loading`, `error`, `not-found`, `global-error`, `default`)의 라우트 컴포넌트는 `export default`를 사용한다.
   - 라우터는 기본 export만 라우트 컴포넌트로 렌더한다.
 - `route.ts`는 HTTP 메서드명 네임드 export(`GET`·`POST` 등)를 사용한다.
 - `metadata`·`generateMetadata`·`generateStaticParams`·`viewport` 등 세그먼트 계약은 네임드 export를 사용한다.

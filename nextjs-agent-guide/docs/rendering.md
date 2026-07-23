@@ -22,7 +22,7 @@
 ### Hydration 결정성
 
 - 서버와 클라이언트 렌더 결과가 일치해야 한다.
-- hydration mismatch는 조용한 시각 버그를 만든다.
+- hydration mismatch는 조용한 비주얼 버그를 만든다.
 - 서버 렌더 경로에서 비결정 값을 사용하지 않는다.
   - `Date.now()`
   - `Math.random()`
