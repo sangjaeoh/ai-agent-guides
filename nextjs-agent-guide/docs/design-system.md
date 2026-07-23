@@ -16,7 +16,8 @@
 - 하위 계층은 상위 계층과 도메인을 알지 못한다.
 - 이 문서는 체계와 판단 기준만 소유한다.
 - 구체 값 정의는 토큰 정의 스타일시트가 소유한다.
-- 스타일 표기와 접근성은 → [coding-conventions](coding-conventions.md), 강제 도구는 → [code-quality](code-quality.md)가 소유한다.
+- 스타일 표기와 접근성은 → [coding-conventions](coding-conventions.md)가 소유한다.
+- 강제 도구는 → [code-quality](code-quality.md)가 소유한다.
 
 ### 토큰
 
@@ -103,7 +104,7 @@
 
 - 라이트·다크 테마 모두에서 검증한다.
 - 컴포넌트 내부에 테마 분기를 두지 않는다.
-- 접근성 완료 조건을 충족한다 → [coding-conventions](coding-conventions.md)의 접근성.
+- 접근성 완료 조건을 충족한다(→ [coding-conventions](coding-conventions.md)의 접근성).
 - 모션 토큰을 사용한다.
 - `prefers-reduced-motion`을 존중한다.
 - 색·치수에 원시값을 사용하지 않는다.
