@@ -1,6 +1,6 @@
 # Spring Boot Agent Guide
 
-Spring Boot + JPA 백엔드를 일관된 규율로 개발하기 위한 아키텍처·컨벤션·엔티티/영속·품질 가이드다.
+Spring Boot + JPA 백엔드를 일관된 규율로 개발하기 위한 아키텍처·컨벤션·엔티티/영속·테스트·품질·캐시·관측성·외부 연동 가이드다.
 
 ![Java](https://img.shields.io/badge/Java-25-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F)
@@ -10,7 +10,7 @@ Spring Boot + JPA 백엔드를 일관된 규율로 개발하기 위한 아키텍
 
 위 배지는 표시용이다. 버전 정본은 각 서비스의 `gradle/libs.versions.toml`이 소유한다.
 
-이 저장소는 개발 규칙 문서만 담는다. 본 가이드의 규율은 아키텍처·컨벤션·엔티티/영속·품질도구를 다룬다.
+이 저장소는 개발 규칙 문서만 담는다. 본 가이드의 규율은 아키텍처·컨벤션·엔티티/영속·테스트·품질도구·캐시·관측성·외부 연동을 다룬다.
 
 ## 기술 스택
 
@@ -28,17 +28,21 @@ Spring Boot + JPA 백엔드를 일관된 규율로 개발하기 위한 아키텍
 | 아키텍처 | 멀티모듈 모듈러 모놀리식 |
 | 포맷·정적분석 | Spotless (Palantir Java Format) · NullAway/JSpecify · Error Prone |
 | 경계 강제 | 컨벤션 플러그인 · 아키텍처 테스트 |
-| 테스트 DB | Testcontainers (PostgreSQL) |
+| 테스트 DB·캐시 | Testcontainers (PostgreSQL·Redis) |
+| 캐시 | Redis 기본 · Caffeine 로컬 채택 예외 |
 
 ## 문서
 
-규칙은 `docs/`의 다섯 문서가 소유한다. 진입 앵커는 [`AGENTS.md`](AGENTS.md)다.
+규칙은 `docs/`의 여덟 문서가 소유한다. 진입 앵커는 [`AGENTS.md`](AGENTS.md)다.
 
-- [`docs/architecture.md`](docs/architecture.md) — 모듈 구조·패키지 구조·의존 방향·리포지토리 접근 범위.
+- [`docs/architecture.md`](docs/architecture.md) — 모듈 구조·패키지 구조·의존 방향·리포지토리 접근 범위·마이그레이션·모듈 추출 판정.
 - [`docs/coding-conventions.md`](docs/coding-conventions.md) — 타입 선언·객체 생성/변환·접근제한자·네이밍·주석.
 - [`docs/entity-persistence.md`](docs/entity-persistence.md) — 엔티티 ID·버저닝·물리 FK 금지·연관·상태 전이.
 - [`docs/testing.md`](docs/testing.md) — 시나리오 소유·작업 절차·테스트 레벨·행동 명세·시나리오 충분성·목 정책·테스트 도구.
 - [`docs/code-quality.md`](docs/code-quality.md) — Spotless·NullAway·Error Prone 게이트와 도구 버전.
+- [`docs/caching.md`](docs/caching.md) — 캐시 판정·도입 게이트·허용 계층·무효화·TTL·버전·저장소·구성·장애·캐시 테스트.
+- [`docs/observability.md`](docs/observability.md) — 로깅·상관 ID·로그 레벨·메트릭·actuator.
+- [`docs/integration.md`](docs/integration.md) — 외부 시스템 호출·RestClient·timeout·재시도·오류 변환.
 
 ## 적용하기
 

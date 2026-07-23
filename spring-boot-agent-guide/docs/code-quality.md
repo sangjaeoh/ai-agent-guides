@@ -12,7 +12,7 @@
 - 계층 의존·엔티티 비노출 등 경계 강제는 컨벤션 플러그인·아키텍처 테스트가 담당한다.
 - 강제 대상 불변식은 [architecture](architecture.md)의 빌드가 강제하는 불변식이 소유한다.
 - Spotless·NullAway·Error Prone은 `convention.java-base`가 전 JVM 모듈에 일괄 적용한다.
-- `convention.java-common`이 Lombok·H2 의존성을 차단한다.
+- `convention.java-common`이 Lombok·H2·spring-webflux 의존성을 차단한다.
 - Lombok은 사용하지 않는다.
 - H2는 사용하지 않는다.
 - 영속 테스트는 실 PostgreSQL(Testcontainers) 기준으로 수행한다.
