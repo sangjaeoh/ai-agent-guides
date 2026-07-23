@@ -64,7 +64,7 @@
 
 #### 렌더링 경계
 
-- 컴포넌트의 서버/클라 기본값과 `'use client'` 판단은 → [rendering](rendering.md).
+- 컴포넌트의 서버/클라이언트 기본값과 `'use client'` 판단은 → [rendering](rendering.md).
 
 #### 접근성
 
