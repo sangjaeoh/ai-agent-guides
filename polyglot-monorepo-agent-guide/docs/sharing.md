@@ -44,7 +44,7 @@
 
 - 파괴적 변경(삭제·의미 변경) 검사 장치는 → [architecture](architecture.md)의 경계 강제를 따른다.
 - drift 게이트는 계약과 생성물의 일치를 강제한다.
-  - 계약 재생성 결과와 커밋된 생성물이 다르면 CI가 실패한다.
+  - 계약에서 재생성한 생성물과 커밋된 생성물이 다르면 CI가 실패한다.
   - 코드와 커밋된 계약(OpenAPI)의 불일치는 방출 단위 스냅샷 테스트가 검증한다.
 - 기계 검증은 필요조건이며 타입 무결성 판단을 대체하지 않는다.
 - seam 자체는 단계화하지 않는다.
@@ -87,7 +87,7 @@
 
 | 구분 | 경로 |
 |---|---|
-| input | `apps/backend/docs/openapi/openapi.json` |
+| input | `apps/backend/docs/openapi/{방출단위}.json` |
 | output | `packages/shared-types/src/generated` |
 
 - 계약이 여러 개면 생성 디렉터리와 패키지 export를 계약별로 분리한다.
